@@ -1,6 +1,7 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,7 @@ const authFormSchema = (type: FormType) => {
 };
 
 const AuthForm = ({ type }: { type: FormType }) => {
+	const router = useRouter();
 	const formSchema = authFormSchema(type);
 	// Define the form
 	const form = useForm<z.infer<typeof formSchema>>({
@@ -36,8 +38,12 @@ const AuthForm = ({ type }: { type: FormType }) => {
 		// toast.error("There was an error");
 		try {
 			if (type === "sign-up") {
+				toast.success("Account created successfully! Please sign in.");
+				router.push("/sign-in");
 				console.log("SIGN UP", values);
 			} else {
+				toast.success("Signed in successfully!");
+				router.push("/");
 				console.log("SIGN IN", values);
 			}
 		} catch (err) {
@@ -54,7 +60,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
 	const isSignIn = type === "sign-in";
 
 	return (
-		<div className="card-border lg:min-w-[566px]">
+		<div className="card-border lg:min-w-[566px] lg:max-w-[566px] lg:mx-auto">
 			<div className="flex flex-col gap-6 card py-14 px-10">
 				<div className="flex flex-row gap-2 justify-center">
 					<Image src="/logo.svg" alt="logo" width={900} height={400} />
