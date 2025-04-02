@@ -15,7 +15,7 @@ const authFormSchema = (type: FormType) => {
 		name:
 			type === "sign-up" ? z.string().min(3).max(50) : z.string().optional(),
 		email: z.string().email(),
-		password: z.string().min(6),
+		password: z.string().min(8),
 	});
 };
 
@@ -33,7 +33,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
 
 	// Submit handler
 	const onSubmit = (values: z.infer<typeof formSchema>) => {
-		toast.error("There was an error");
+		// toast.error("There was an error");
 		try {
 			if (type === "sign-up") {
 				console.log("SIGN UP", values);
@@ -66,14 +66,19 @@ const AuthForm = ({ type }: { type: FormType }) => {
 						className="w-full space-y-6 mt-4 form"
 					>
 						{!isSignIn && (
-							<FormField control={form.control} name="name" label="Name" />
+							<FormField
+								control={form.control}
+								name="name"
+								label="Name"
+								placeholder="Your name"
+							/>
 						)}
 						<FormField
 							control={form.control}
 							name="email"
 							label="Email"
 							type="email"
-							placeholder="Enter your email"
+							placeholder="Your email address"
 						/>
 						<FormField
 							control={form.control}

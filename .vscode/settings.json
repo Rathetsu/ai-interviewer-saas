@@ -25,5 +25,17 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "typescript.tsdk": "node_modules/typescript/lib",
-  "editor.wordWrap": "on"
+  "editor.wordWrap": "on",
+  "files.exclude": {
+		"**/.git": false,
+		"**/.svn": false,
+		"**/.hg": false,
+		"**/CVS": false,
+		"**/.DS_Store": false,
+		"**/Thumbs.db": false,
+		"**/.retool_types/**": true,
+		".cache": true,
+		"retool.config.json": true,
+		"**/*tsconfig.json": true
+	}
 }
