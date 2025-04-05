@@ -48,8 +48,10 @@ const AuthForm = ({ type }: { type: FormType }) => {
 					redirect("/error");
 				}
 
-				toast.success("Account created successfully. Please sign in.");
-				router.push("/sign-in");
+				toast.success(
+					"Account created successfully. Please check your email to verify your account."
+				);
+				router.push("/email-verification");
 			} else {
 				const { email, password } = data;
 				const formData = new FormData();
@@ -80,7 +82,13 @@ const AuthForm = ({ type }: { type: FormType }) => {
 		<div className="card-border lg:min-w-[566px] lg:max-w-[566px] lg:mx-auto">
 			<div className="flex flex-col gap-6 card py-14 px-10">
 				<div className="flex flex-row gap-2 justify-center">
-					<Image src="/logo.svg" alt="logo" width={900} height={400} />
+					<Image
+						src="/logo.svg"
+						alt="logo"
+						width={900}
+						height={400}
+						className="object-contain"
+					/>
 				</div>
 				<h3 className="text-center">Practice Job interivews with AI</h3>
 				<Form {...form}>
