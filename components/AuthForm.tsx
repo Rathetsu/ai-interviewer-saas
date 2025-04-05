@@ -1,9 +1,9 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { z } from "zod";
-
+import { signIn, signUp } from "@/lib/actions/auth.action";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import Image from "next/image";
@@ -34,17 +34,34 @@ const AuthForm = ({ type }: { type: FormType }) => {
 	});
 
 	// Submit handler
-	const onSubmit = (values: z.infer<typeof formSchema>) => {
-		// toast.error("There was an error");
+	const onSubmit = async (data: z.infer<typeof formSchema>) => {
 		try {
 			if (type === "sign-up") {
-				toast.success("Account created successfully! Please sign in.");
+				const { name, email, password } = data;
+				const formData = new FormData();
+				formData.append("email", email);
+				formData.append("password", password);
+				if (name) formData.append("name", name);
+				const result = await signUp(formData);
+				if (!result.success) {
+					toast.error(result.message);
+					redirect("/error");
+				}
+
+				toast.success("Account created successfully. Please sign in.");
 				router.push("/sign-in");
-				console.log("SIGN UP", values);
 			} else {
+				const { email, password } = data;
+				const formData = new FormData();
+				formData.append("email", email);
+				formData.append("password", password);
+				const result = await signIn(formData);
+				if (!result.success) {
+					toast.error(result.message);
+					redirect("/error");
+				}
 				toast.success("Signed in successfully!");
 				router.push("/");
-				console.log("SIGN IN", values);
 			}
 		} catch (err) {
 			if (err instanceof Error) {
