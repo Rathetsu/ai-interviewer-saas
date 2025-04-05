@@ -68,3 +68,33 @@ export async function signUp(formData: FormData) {
 		message: "Account created successfully. Please sign in.",
 	};
 }
+
+export async function resendVerificationEmail(formData: FormData) {
+	const supabase = await createClient();
+
+	const email = formData.get("email") as string;
+
+	if (!email) {
+		return {
+			success: false,
+			message: "Email is required",
+		};
+	}
+
+	const { error } = await supabase.auth.resend({
+		type: "signup",
+		email,
+	});
+
+	if (error) {
+		return {
+			success: false,
+			message: error.message,
+		};
+	}
+
+	return {
+		success: true,
+		message: "Verification email sent successfully",
+	};
+}
