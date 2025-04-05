@@ -12,12 +12,28 @@ import { toast } from "sonner";
 import FormField from "./FormField";
 
 const authFormSchema = (type: FormType) => {
-	return z.object({
-		name:
-			type === "sign-up" ? z.string().min(3).max(50) : z.string().optional(),
-		email: z.string().email(),
-		password: z.string().min(8),
-	});
+	return z
+		.object({
+			name:
+				type === "sign-up" ? z.string().min(3).max(50) : z.string().optional(),
+			email: z.string().email(),
+			password: z.string().min(8),
+			...(type === "sign-up" && {
+				confirmPassword: z.string(),
+			}),
+		})
+		.refine(
+			(data) => {
+				if (type === "sign-up") {
+					return data.password === data.confirmPassword;
+				}
+				return true;
+			},
+			{
+				message: "Passwords don't match",
+				path: ["confirmPassword"],
+			}
+		);
 };
 
 const AuthForm = ({ type }: { type: FormType }) => {
@@ -30,6 +46,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
 			name: "",
 			email: "",
 			password: "",
+			...(type === "sign-up" && { confirmPassword: "" }),
 		},
 	});
 
@@ -118,6 +135,15 @@ const AuthForm = ({ type }: { type: FormType }) => {
 							type="password"
 							placeholder="Enter your password"
 						/>
+						{!isSignIn && (
+							<FormField
+								control={form.control}
+								name="confirmPassword"
+								label="Confirm Password"
+								type="password"
+								placeholder="Confirm your password"
+							/>
+						)}
 						<div className="flex justify-between items-center">
 							{isSignIn && (
 								<Link
