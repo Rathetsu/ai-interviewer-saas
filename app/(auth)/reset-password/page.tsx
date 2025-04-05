@@ -10,6 +10,7 @@ import Image from "next/image";
 import { toast } from "sonner";
 import FormField from "@/components/FormField";
 import { createClient } from "@/lib/supabase/client";
+import { useState } from "react";
 
 const resetPasswordSchema = z
 	.object({
@@ -23,7 +24,7 @@ const resetPasswordSchema = z
 
 export default function ResetPasswordPage() {
 	const router = useRouter();
-	// const [isLoading, setIsLoading] = useState(true);
+	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	const form = useForm<z.infer<typeof resetPasswordSchema>>({
 		resolver: zodResolver(resetPasswordSchema),
@@ -35,6 +36,7 @@ export default function ResetPasswordPage() {
 
 	const onSubmit = async (data: z.infer<typeof resetPasswordSchema>) => {
 		try {
+			setIsSubmitting(true);
 			const supabase = createClient();
 			const { error } = await supabase.auth.updateUser({
 				password: data.password,
@@ -53,6 +55,8 @@ export default function ResetPasswordPage() {
 			} else {
 				toast.error("An unknown error occurred.");
 			}
+		} finally {
+			setIsSubmitting(false);
 		}
 	};
 
@@ -100,8 +104,9 @@ export default function ResetPasswordPage() {
 						<Button
 							className="w-full bg-white text-black hover:bg-gray-100"
 							type="submit"
+							disabled={isSubmitting}
 						>
-							Update Password
+							{isSubmitting ? "Updating password..." : "Update Password"}
 						</Button>
 					</form>
 				</Form>

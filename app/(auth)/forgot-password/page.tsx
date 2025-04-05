@@ -10,12 +10,14 @@ import Link from "next/link";
 import { toast } from "sonner";
 import FormField from "@/components/FormField";
 import { createClient } from "@/lib/supabase/client";
+import { useEffect, useState } from "react";
 
 const forgotPasswordSchema = z.object({
 	email: z.string().email(),
 });
 
 export default function ForgotPasswordPage() {
+	const [mounted, setMounted] = useState(false);
 	const form = useForm<z.infer<typeof forgotPasswordSchema>>({
 		resolver: zodResolver(forgotPasswordSchema),
 		defaultValues: {
@@ -23,11 +25,16 @@ export default function ForgotPasswordPage() {
 		},
 	});
 
+	useEffect(() => {
+		setMounted(true);
+	}, []);
+
 	const onSubmit = async (data: z.infer<typeof forgotPasswordSchema>) => {
 		try {
 			const supabase = createClient();
+			const origin = window.location.origin;
 			const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
-				redirectTo: `${window.location.origin}/reset-password`,
+				redirectTo: `${origin}/reset-password`,
 			});
 
 			if (error) {
@@ -46,6 +53,10 @@ export default function ForgotPasswordPage() {
 			}
 		}
 	};
+
+	if (!mounted) {
+		return null;
+	}
 
 	return (
 		<div className="card-border lg:min-w-[566px] lg:max-w-[566px] lg:mx-auto">
