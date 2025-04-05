@@ -118,6 +118,16 @@ const AuthForm = ({ type }: { type: FormType }) => {
 							type="password"
 							placeholder="Enter your password"
 						/>
+						<div className="flex justify-between items-center">
+							{isSignIn && (
+								<Link
+									href="/forgot-password"
+									className="text-sm text-muted-foreground hover:text-primary"
+								>
+									Forgot your password?
+								</Link>
+							)}
+						</div>
 						<Button className="btn" type="submit">
 							{isSignIn ? "Sign in" : "Create an accout"}
 						</Button>
