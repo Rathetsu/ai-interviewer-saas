@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import FormField from "@/components/FormField";
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
+import { redirect } from "next/navigation";
 
 const forgotPasswordSchema = z.object({
 	email: z.string().email(),
@@ -27,6 +28,21 @@ export default function ForgotPasswordPage() {
 
 	useEffect(() => {
 		setMounted(true);
+
+		// Check if user is already authenticated
+		const checkAuth = async () => {
+			const supabase = createClient();
+			const {
+				data: { user },
+			} = await supabase.auth.getUser();
+
+			// If user is authenticated, redirect to home
+			if (user) {
+				redirect("/");
+			}
+		};
+
+		checkAuth();
 	}, []);
 
 	const onSubmit = async (data: z.infer<typeof forgotPasswordSchema>) => {

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { resendVerificationEmail } from "@/lib/actions/auth.action";
 import { toast } from "sonner";
 import { Form } from "@/components/ui/form";
@@ -11,6 +11,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import FormField from "@/components/FormField";
+import { createClient } from "@/lib/supabase/client";
+import { redirect } from "next/navigation";
 
 const resendEmailSchema = z.object({
 	email: z.string().email(),
@@ -18,6 +20,7 @@ const resendEmailSchema = z.object({
 
 const EmailVerificationPage = () => {
 	const [isResending, setIsResending] = useState(false);
+	const [mounted, setMounted] = useState(false);
 
 	const form = useForm<z.infer<typeof resendEmailSchema>>({
 		resolver: zodResolver(resendEmailSchema),
@@ -25,6 +28,25 @@ const EmailVerificationPage = () => {
 			email: "",
 		},
 	});
+
+	useEffect(() => {
+		setMounted(true);
+
+		// Check if user is already authenticated
+		const checkAuth = async () => {
+			const supabase = createClient();
+			const {
+				data: { user },
+			} = await supabase.auth.getUser();
+
+			// If user is authenticated, redirect to home
+			if (user) {
+				redirect("/");
+			}
+		};
+
+		checkAuth();
+	}, []);
 
 	const onSubmit = async (data: z.infer<typeof resendEmailSchema>) => {
 		try {
@@ -49,6 +71,10 @@ const EmailVerificationPage = () => {
 			setIsResending(false);
 		}
 	};
+
+	if (!mounted) {
+		return null;
+	}
 
 	return (
 		<div className="card-border lg:min-w-[700px] lg:max-w-[700px] lg:mx-auto">

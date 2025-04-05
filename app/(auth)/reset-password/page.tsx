@@ -10,7 +10,7 @@ import Image from "next/image";
 import { toast } from "sonner";
 import FormField from "@/components/FormField";
 import { createClient } from "@/lib/supabase/client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const resetPasswordSchema = z
 	.object({
@@ -25,6 +25,7 @@ const resetPasswordSchema = z
 export default function ResetPasswordPage() {
 	const router = useRouter();
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [mounted, setMounted] = useState(false);
 
 	const form = useForm<z.infer<typeof resetPasswordSchema>>({
 		resolver: zodResolver(resetPasswordSchema),
@@ -33,6 +34,10 @@ export default function ResetPasswordPage() {
 			confirmPassword: "",
 		},
 	});
+
+	useEffect(() => {
+		setMounted(true);
+	}, []);
 
 	const onSubmit = async (data: z.infer<typeof resetPasswordSchema>) => {
 		try {
@@ -59,6 +64,10 @@ export default function ResetPasswordPage() {
 			setIsSubmitting(false);
 		}
 	};
+
+	if (!mounted) {
+		return null;
+	}
 
 	return (
 		<div className="card-border lg:min-w-[566px] lg:max-w-[566px] lg:mx-auto">
